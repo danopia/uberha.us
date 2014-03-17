@@ -60,6 +60,13 @@ rl.on('line', function (line) {
     }
   }
 
+  if (cmd == 'alert') {
+    api.setGroupLightState(0, lightState.create().alert());
+  }
+  if (cmd == 'ALERT') {
+    api.setGroupLightState(0, lightState.create().alert(true)); // 10 times
+  }
+
   if (cmd == 'colorloop') {
     var state1 = lightState.create().on().hsl(0,   100, 95).effect('none');
     var state2 = lightState.create().on().hsl(120, 100, 95).effect('none');
