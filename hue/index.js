@@ -3,7 +3,7 @@ var hue = require("node-hue-api"),
     lightState = hue.lightState;
 
 var ip = '192.168.1.148';
-var user = '173b7ba927ae37972420dced2e2f10bb'; // worthless outside of the lan
+var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
 var api = new HueApi(ip, user);
 
 var readline = require('readline');
@@ -60,6 +60,10 @@ rl.on('line', function (line) {
     }
   }
 
+  if (cmd == 'link') {
+    console.log(api.pressLinkButton());
+  }
+
   if (cmd == 'alert') {
     api.setGroupLightState(0, lightState.create().alert());
   }
@@ -94,7 +98,7 @@ rl.on('line', function (line) {
 
   if (cmd == 'random') {
     for (var l = 1; l <= 3; l++) {
-      api.setLightState(l, lightState.create().on().hsl(Math.round(Math.random() * 360), 100, 95).effect('none'));
+      api.setLightState(l, lightState.create().hsl(Math.round(Math.random() * 360), 100, 95).transition(0));
     }
   }
 
