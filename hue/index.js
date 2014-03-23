@@ -2,8 +2,12 @@ var hue = require("node-hue-api"),
     HueApi = hue.HueApi,
     lightState = hue.lightState;
 
-var ip = '192.168.1.148';
-var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
+var Generator = require('./generator').Generator;
+
+//var ip = '192.168.1.148';
+//var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
+var ip = '10.44.2.180';
+var user = '43dcfa424cfd20f369523cc2aa7397';
 var api = new HueApi(ip, user);
 
 var readline = require('readline');
@@ -16,14 +20,16 @@ rl.setPrompt('hue> ');
 rl.prompt();
 
 var strobe = false;
+var pulse = false;
 var dance = null;
+var rgb = null;
 rl.on('line', function (line) {
   var parts = line.split(' ');
   var cmd = parts.shift();
 
-  if (strobe) {
+  if (pulse) {
     if (cmd == 'q') {
-      strobe = false;
+      pulse = false;
         api.setGroupLightState(0, lightState.create().brightness(90));
     } else if (cmd == '') {
       api.setGroupLightState(0, lightState.create().brightness(100).transition(0));
@@ -32,8 +38,8 @@ rl.on('line', function (line) {
       }, 50);
     }
   }
-  if (cmd == 'strobe') {
-    strobe = true;
+  if (cmd == 'pulse') {
+    pulse = true;
     api.setGroupLightState(0, lightState.create().brightness(1).on());
   }
 
@@ -96,10 +102,39 @@ rl.on('line', function (line) {
     }, 500);
   }
 
+  if (rgb) {
+    clearInterval(rgb);
+    rgb = null;
+  }
+  if (cmd == 'rgb') {
+    var delay = +parts[0] || 100;
+
+    var lightGen = new Generator([1, 2, 3, 2]);
+    var hueGen   = new Generator([0, 130, 250]);
+    rgb = setInterval(function () {
+      var light = lightGen.next();
+      var hue = hueGen.next();
+
+      console.log('Light', light, 'to', hue);
+      api.setLightState(light, lightState.create().hsl(hue, 100, 95));
+    }, delay);
+  }
+
   if (cmd == 'random') {
     for (var l = 1; l <= 3; l++) {
       api.setLightState(l, lightState.create().hsl(Math.round(Math.random() * 360), 100, 95).transition(0));
     }
+  }
+
+  if (dance) {
+    dance = null;
+  }
+  if (cmd == 'dance') {
+    dance = setInterval(function () {
+      for (var l = 1; l <= 3; l++) {
+        api.setLightState(l, lightState.create().on().transition(0).hsl(Math.round(Math.random() * 360), 100, 95).effect('none'));
+      }
+    }, 500);
   }
 
   rl.prompt();
