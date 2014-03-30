@@ -1,7 +1,6 @@
 var hue = require("node-hue-api"),
     HueApi = hue.HueApi,
     lightState = hue.lightState;
-var http = require('http');
 
 var Generator = require('./generator').Generator;
 
@@ -9,27 +8,17 @@ var ip = '192.168.1.148';
 var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
 //var ip = '10.44.2.180';
 //var user = '173b7ba927ae37972420dced2e2f10bb';
-
 var api = new HueApi(ip, user);
 
-var Node = require('./../node');
-var node = new Node();
-node.start('home.lighting', 'hue', function () {
-  node.listNodes(function (data) {
-    var occupancy = data['home.sensors.occupancy'];
-
-    node.subscribe(occupancy, 'people_home', function (peopleHome) {
-      console.log('[hue] There are', peopleHome, 'people home.');
-    });
-
-    node.subscribe(occupancy, 'people_awake', function (peopleAwake) {
-      console.log('[hue] There are', peopleAwake, 'people awake.');
-    });
-  });
+var readline = require('readline');
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
 });
 
+rl.setPrompt('hue> ');
+rl.prompt();
 
-/*
 var strobe = false;
 var pulse = false;
 var dance = null;

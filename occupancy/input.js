@@ -25,7 +25,7 @@ exports.scanWifi = function (cb) {
   });
 };
 
-exports.getStations = function (cb) {
+exports.getDDWRTstate = function (cb) {
   http.get(routerUrl, function (res) {
     if (res.statusCode != 200) {
       console.log('Router returned code', res.statusCode);
@@ -47,18 +47,25 @@ exports.getStations = function (cb) {
           props[match[1]] = match[2];
         }
       });
-
-      var aw = [];
-      while (props.active_wireless.length) {
-        aw.push(props.active_wireless.splice(0, 9));
-      }
-      props.active_wireless = aw;
-
       cb(props);
     });
   }).on('error', function (e) {
     cb(null);
   });
+};
+
+exports.getStations = function (cb) {
+  exports.getDDWRTstate(function (props) {
+    if (!props) {
+      return cb(null);
+    };
+    
+    var aw = [];
+    while (props.active_wireless.length) {
+      aw.push(props.active_wireless.splice(0, 9));
+    }
+    cb(aw);
+  })
 };
 
 exports.getMyMac = function (cb) {
