@@ -5,7 +5,6 @@ module.exports = function (namespace, name) {
   this.serverPort = +process.argv[2] || 80;
 
   this.properties = {};
-  this.pubsub = [];
   this.endpoints = {};
 
   var self = this;
@@ -66,6 +65,22 @@ module.exports.prototype.subscribe = function (remote, property, cb) {
     function (res) {
       console.log(self.tag, 'Subscribed to', property, 'on', remote.address);
     });
+};
+
+module.exports.prototype.addProperty = function (property, type) {
+  var prop = this.properties[property] = {
+    name: property,
+    type: type,
+    listeners: []
+  };
+
+  var hookpoint = 'POST /node/' + this.info.address + '/' + property + '/hook';
+  this.endpoints[hookpoint] = function (req, res) {
+    prop.listeners.push(req.http);
+
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify({ value: prop.value, type: prop.type }));
+  };
 };
 
 //////////////////////////
