@@ -7,7 +7,7 @@ node.start('home.sensors', 'occupancy', function () {
 
   var people = [
     {name: 'Daniel', laptops: ['28:CF:E9:5A:26:41'], phones: ['F8:A9:D0:0E:E1:31']},
-    {name: 'Raynes', laptops: [                   ], phones: ['04:F7:E4:14:C6:A4']}
+    {name: 'Raynes', laptops: ['28:CF:E9:1E:6B:8D'], phones: ['04:F7:E4:14:C6:A4']}
   ];
   var lHome = 0, lAwake = 0;
 
