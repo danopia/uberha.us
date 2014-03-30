@@ -64,23 +64,46 @@ module.exports.prototype.subscribe = function (remote, property, cb) {
     { token: this.info.token, http: this.info.http },
     function (res) {
       console.log(self.tag, 'Subscribed to', property, 'on', remote.address);
+      cb(res.value);
     });
+
+  var hookpoint = 'POST /node/' + remote.address + '/' + property;
+  this.endpoints[hookpoint] = function (req, res) {
+    cb(req.value);
+
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end();
+  };
 };
 
-module.exports.prototype.addProperty = function (property, type) {
+module.exports.prototype.addProperty = function (property, type, value) {
   var prop = this.properties[property] = {
     name: property,
     type: type,
-    listeners: []
+    listeners: [],
+    value: value
   };
 
   var hookpoint = 'POST /node/' + this.info.address + '/' + property + '/hook';
   this.endpoints[hookpoint] = function (req, res) {
-    prop.listeners.push(req.http);
+    prop.listeners.push(req);
 
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify({ value: prop.value, type: prop.type }));
   };
+};
+
+module.exports.prototype.setProperty = function (property, value) {
+  var prop = this.properties[property];
+  var old = prop.value;
+  prop.value = value;
+
+  var self = this;
+  prop.listeners.forEach(function (listener) {
+    self.sendPostTo(listener.http.hostname, listener.http.port,
+      '/node/' + self.info.address + '/' + prop.name,
+      { token: listener.token, type: prop.type, value: prop.value })
+  });
 };
 
 //////////////////////////
@@ -100,8 +123,8 @@ module.exports.prototype.sendPostTo = function (host, port, path, json, cb) {
 
     res.on('end', function () {
       var json = buffer.length ? JSON.parse(buffer) : null;
-      cb(json);
-    })
+      cb && cb(json);
+    });
   });
 
   req.write(JSON.stringify(json));
@@ -124,7 +147,7 @@ module.exports.prototype.sendGetTo = function (host, port, path, cb) {
 
     res.on('end', function () {
       var json = buffer.length ? JSON.parse(buffer) : null;
-      cb(json);
+      cb && cb(json);
     })
   });
 

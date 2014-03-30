@@ -12,8 +12,7 @@ var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
 
 var api = new HueApi(ip, user);
 
-var Node = require('./../node');
-var node = new Node();
+var node = new (require('./../node'))();
 node.start('home.lighting', 'hue', function () {
   node.listNodes(function (data) {
     var occupancy = data['home.sensors.occupancy'];
