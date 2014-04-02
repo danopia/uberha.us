@@ -16,7 +16,7 @@ function change_input(input, newVal) {
     console.log('Everyone left!');
     node.setProperty('occupied', false);
 
-  } else if (input == 'people_awake' && !inputs.people_awake && newVal) {
+  } else if (input == 'people_awake' && !inputs.people_awake && newVal && (new Date().getHours() < 6)) {
     console.log('Someone woke up!');
     node.setProperty('sleep_mode', false);
   } else if (input == 'people_awake' && inputs.people_awake && !newVal && inputs.people_home) {
