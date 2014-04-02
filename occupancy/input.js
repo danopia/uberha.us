@@ -2,8 +2,9 @@ var spawn = require('child_process').spawn;
 var http = require('http');
 var util = require('util');
 
-var config = require('./config.json');
-var routerUrl = util.format('http://%s:%s@%s/Info.live.htm', config.user, config.pass, config.ip);
+var config = require('./../config');
+var ddwrt = config.node.occupancy.ddwrt;
+var routerUrl = util.format('http://%s:%s@%s/Info.live.htm', ddwrt.user, ddwrt.pass, ddwrt.ip);
 
 exports.scanWifi = function (cb) {
   var proc = spawn('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', ['en1', 'scan']);
@@ -59,7 +60,7 @@ exports.getStations = function (cb) {
     if (!props) {
       return cb(null);
     };
-    
+
     var aw = [];
     while (props.active_wireless.length) {
       aw.push(props.active_wireless.splice(0, 9));

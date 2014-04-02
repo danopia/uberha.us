@@ -1,19 +1,20 @@
 var solar = require('./solar');
 
+function getElev() {
+  var ms = Math.round((+new Date()) / 1000);
+  return solar.solar_elevation(ms, node.config.lat, node.config.long);
+}
+
 var node = new (require('./../node'))();
 node.start('outside', 'nature', function () {
-  node.addProperty('people_home',  'number', 0);
-  node.addProperty('people_awake', 'number', 0);
 
+  var elev = getElev();
+  node.addProperty('solar_elev', 'number', elev);
+  node.addProperty('sun_is_set', 'number', elev < -12);
+
+  setInterval(function () {
+    elev = getElev();
+    node.setProperty('solar_elev', elev);
+    node.setProperty('sun_is_set', elev < -12);
+  }, 60 * 1000);
 });
-
-		/* Current angular elevation of the sun */
-		double now;
-		r = systemtime_get_time(&now);
-		if (r < 0) {
-			fputs(_("Unable to read system time.\n"), stderr);
-			method->free(&state);
-			exit(EXIT_FAILURE);
-		}
-
-		double elevation = solar_elevation(now, lat, lon);

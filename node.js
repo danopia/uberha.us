@@ -1,6 +1,6 @@
 var http = require('http');
 
-module.exports = function (namespace, name) {
+module.exports = function () {
   this.serverHost =  process.argv[3] || 'localhost';
   this.serverPort = +process.argv[2] || 80;
 
@@ -36,6 +36,7 @@ module.exports = function (namespace, name) {
 module.exports.prototype.start = function (namespace, name, cb) {
   this.port = 8000 + Math.round(Math.random() * 1000);
   this.tag = '[' + name + ']';
+  this.config = require('./config').node[name];
 
   var self = this;
   this.httpd.listen(this.port, function (err) {
@@ -97,6 +98,8 @@ module.exports.prototype.setProperty = function (property, value) {
   var prop = this.properties[property];
   var old = prop.value;
   prop.value = value;
+
+  if (old == value) return false; // only push out if it was changed
 
   var self = this;
   prop.listeners.forEach(function (listener) {

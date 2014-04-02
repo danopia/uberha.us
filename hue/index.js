@@ -1,28 +1,61 @@
-var hue = require("node-hue-api"),
+var hue = require('node-hue-api'),
     HueApi = hue.HueApi,
     lightState = hue.lightState;
-var http = require('http');
-
 var Generator = require('./generator').Generator;
-
-var ip = '192.168.1.148';
-var user = 'c0ff1603d31754f4587db05ca753f'; // worthless outside of the lan
-//var ip = '10.44.2.180';
-//var user = '173b7ba927ae37972420dced2e2f10bb';
-
-var api = new HueApi(ip, user);
 
 var node = new (require('./../node'))();
 node.start('home.lighting', 'hue', function () {
-  node.listNodes(function (data) {
-    var occupancy = data['home.sensors.occupancy'];
+  var api = new HueApi(node.config.ip, node.config.user);
 
-    node.subscribe(occupancy, 'people_home', function (peopleHome) {
-      console.log('[hue] There are', peopleHome, 'people home.');
+  var disable = true;
+  var sleeping = false;
+  var occupied = false;
+
+  function setNightlight() {
+    api.setGroupLightState(0, lightState.create().brightness(1));
+    api.setLightState(1, lightState.create().off());
+    api.setLightState(2, lightState.create().on().brightness(1)); // one living light
+    api.setLightState(3, lightState.create().off());
+    api.setLightState(4, lightState.create().off());
+    api.setLightState(5, lightState.create().off());
+    api.setLightState(6, lightState.create().on().brightness(1)); // hallway light
+  }
+
+  function stateMachine() {
+    if (disable) {
+      console.log('==>', 'Turning off lights - disabled');
+      api.setGroupLightState(0, lightState.create().off());
+    } else if (sleeping) {
+      console.log('==>', 'Setting nightlight');
+      setNightlight();
+    } else if (occupied) {
+      console.log('==>', 'Lights to full power');
+      api.setGroupLightState(0, lightState.create().on().brightness(85));
+    } else {
+      console.log('==>', 'Turning off lights - nobody home');
+      api.setGroupLightState(0, lightState.create().off());
+    }
+  }
+
+  node.listNodes(function (data) {
+    var statement = data['home.statement'];
+
+    node.subscribe(statement, 'occupied', function (nowOccupied) {
+      console.log('[hue] Occupied order:', nowOccupied);
+      occupied = nowOccupied;
+      stateMachine();
     });
 
-    node.subscribe(occupancy, 'people_awake', function (peopleAwake) {
-      console.log('[hue] There are', peopleAwake, 'people awake.');
+    node.subscribe(statement, 'disable_lights', function (disableLights) {
+      console.log('[hue] Disable order:', disableLights);
+      disable = disableLights;
+      stateMachine();
+    });
+
+    node.subscribe(statement, 'sleep_mode', function (sleepMode) {
+      console.log('[hue] Sleep mode:', sleepMode);
+      sleeping = sleepMode;
+        stateMachine();
     });
   });
 });

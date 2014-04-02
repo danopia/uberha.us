@@ -2,6 +2,8 @@ var http = require('http');
 var crypto = require('crypto');
 var fork = require('child_process').fork;
 
+var config = require('./../config');
+
 console.log('\n' + new Array(81).join('-'));
 
 var nodes = {};
@@ -57,15 +59,14 @@ var server = http.createServer(function (req, res) {
   }
 });
 
-server.listen(8000, function (err) {
-  //fork('nature', ['8000']);
-  fork('occupancy', ['8000']);
+server.listen(config.reactor.port, function (err) {
+  var toStart = config.reactor.nodes;
+  var argv = ['' + config.reactor.port];
 
-  setTimeout(function () {
-    //fork('anarchy', ['8000']);
+  var timer = setInterval(function () {
+    fork(toStart.shift(), argv);
 
-    setTimeout(function () {
-      fork('hue', ['8000']);
-    }, 50);
+    if (!toStart.length)
+      clearInterval(timer);
   }, 50);
 });

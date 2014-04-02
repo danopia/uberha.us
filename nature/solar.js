@@ -37,7 +37,7 @@ var solar_time = [
 ];
 
 
-/* Ported from javascript code by U.S. Department of Commerce,
+/* C was ported from javascript code by U.S. Department of Commerce,
    National Oceanic & Atmospheric Administration:
    http://www.srrb.noaa.gov/highlights/sunrise/calcdetails.html
    It is based on equations from "Astronomical Algorithms" by
@@ -295,7 +295,7 @@ exports.solar_elevation = function (date, lat, lon)
 	return DEG(solar_elevation_from_time(jcent_from_jd(jd), lat, lon));
 };
 
-exports.solar_table_fill = function (date, lat, lon)
+exports.solar_table = function (date, lat, lon)
 {
   var table = {};
 
