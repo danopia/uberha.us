@@ -5,7 +5,7 @@ module.exports = function () {
   this.serverPort = +process.argv[2] || 80;
 
   this.properties = {};
-  this.endpoints = {};
+  this.endpoints  = {};
 
   var self = this;
   this.httpd = http.createServer(function (req, res) {
@@ -132,8 +132,6 @@ module.exports.prototype.sendPostTo = function (host, port, path, json, cb) {
 
   req.write(JSON.stringify(json));
   req.end();
-
-  console.log(this.tag, 'sending', opts.method, 'http://' + host + ':' + port + path, json);
 };
 
 module.exports.prototype.sendGet = function (path, cb) {
@@ -153,6 +151,4 @@ module.exports.prototype.sendGetTo = function (host, port, path, cb) {
       cb && cb(json);
     })
   });
-
-  console.log(this.tag, 'sending', opts.method, 'http://' + host + ':' + port + path);
 };
