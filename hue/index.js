@@ -7,9 +7,7 @@ var node = new (require('./../node'))();
 node.start('home.lighting', 'hue', function () {
   var api = new HueApi(node.config.ip, node.config.user);
 
-  var disable = true;
-  var sleeping = false;
-  var occupied = false;
+  var state;
 
   function setNightlight() {
     api.setGroupLightState(0, lightState.create().brightness(1));
@@ -22,17 +20,25 @@ node.start('home.lighting', 'hue', function () {
   }
 
   function stateMachine() {
-    if (disable) {
-      console.log('==>', 'Turning off lights - disabled');
-      api.setGroupLightState(0, lightState.create().off());
-    } else if (sleeping) {
+    switch (state) {
+
+    case 'sleeping':
       console.log('==>', 'Setting nightlight');
       setNightlight();
-    } else if (occupied) {
+      break;
+
+    case 'active_night':
       console.log('==>', 'Lights to full power');
       api.setGroupLightState(0, lightState.create().on().brightness(85));
-    } else {
-      console.log('==>', 'Turning off lights - nobody home');
+      if (new Date().getHours() > 12) {
+        api.setLightState(4, lightState.create().brightness(40));
+        api.setLightState(5, lightState.create().brightness(40));
+        api.setLightState(6, lightState.create().brightness(20));
+      }
+      break;
+
+    default:
+      console.log('==>', 'Turning off lights - unknown state', state);
       api.setGroupLightState(0, lightState.create().off());
     }
   }
@@ -40,22 +46,10 @@ node.start('home.lighting', 'hue', function () {
   node.listNodes(function (data) {
     var statement = data['home.statement'];
 
-    node.subscribe(statement, 'occupied', function (nowOccupied) {
-      console.log('[hue] Occupied order:', nowOccupied);
-      occupied = nowOccupied;
+    node.subscribe(statement, 'state', function (newState) {
+      console.log('[hue] State changed to', newState);
+      state = newState;
       stateMachine();
-    });
-
-    node.subscribe(statement, 'disable_lights', function (disableLights) {
-      console.log('[hue] Disable order:', disableLights);
-      disable = disableLights;
-      stateMachine();
-    });
-
-    node.subscribe(statement, 'sleep_mode', function (sleepMode) {
-      console.log('[hue] Sleep mode:', sleepMode);
-      sleeping = sleepMode;
-        stateMachine();
     });
   });
 });

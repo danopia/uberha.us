@@ -1,42 +1,39 @@
 var inputs = {
-  solar_elev: 0,
   sun_is_set: 0,
 
   people_home: 0,
   people_awake: 0
 };
 
+var state = 'vacant';
+var engine = require('./states');
+
 function change_input(input, newVal) {
-  console.log('[statement]', 'Input', input, 'changed to', newVal);
-
-  if (input == 'people_home' && !inputs.people_home && newVal) {
-    console.log('Someone got home!');
-    node.setProperty('occupied', true);
-  } else if (input == 'people_home' && inputs.people_home && !newVal) {
-    console.log('Everyone left!');
-    node.setProperty('occupied', false);
-
-  } else if (input == 'people_awake' && !inputs.people_awake && newVal && (new Date().getHours() > 6)) {
-    console.log('Someone woke up!');
-    node.setProperty('sleep_mode', false);
-  } else if (input == 'people_awake' && inputs.people_awake && !newVal && inputs.people_home) {
-    console.log('Everyone passed out');
-    node.setProperty('sleep_mode', true);
-
-  } else if (input == 'sun_is_set') {
-    console.log('Sunset status:', newVal);
-    node.setProperty('disable_lights', !newVal);
-
-  }
-
+  var oldVal = inputs[input];
   inputs[input] = newVal;
+  console.log('[statement] Input', input, 'changed from', oldVal, 'to', newVal);
+
+  var runner = engine[state];
+  if (runner) {
+    var newState = runner(inputs, input, oldVal) || state;
+    if (newState == state) {
+      console.log('[statement] State remains unchanged:', state);
+    } else {
+      console.log('[statement] Changing state to', newState, 'from', state);
+
+      state = newState;
+      node.setProperty('state', state);
+    }
+  } else {
+    console.log('[STATEMENT] THE STATE MACHINE IS BROKEN! Lost at', state);
+    console.log('[STATEMENT] Committing suicide due to broken state.');
+    process.exit(1);
+  }
 }
 
 var node = new (require('./../node'))();
 node.start('home', 'statement', function () {
-  node.addProperty('occupied', 'number', false);
-  node.addProperty('disable_lights', 'number', false);
-  node.addProperty('sleep_mode', 'number', false);
+  node.addProperty('state', 'string', state);
 
   node.listNodes(function (data) {
     var occupancy = data['home.sensors.occupancy'];
@@ -48,9 +45,6 @@ node.start('home', 'statement', function () {
     });
 
     var nature = data['outside.nature'];
-    node.subscribe(nature, 'solar_elev', function (solarElev) {
-      change_input('solar_elev', solarElev);
-    });
     node.subscribe(nature, 'sun_is_set', function (sunIsSet) {
       change_input('sun_is_set', sunIsSet);
     });

@@ -10,11 +10,11 @@ node.start('outside', 'nature', function () {
 
   var elev = getElev();
   node.addProperty('solar_elev', 'number', elev);
-  node.addProperty('sun_is_set', 'number', elev < -12);
+  node.addProperty('sun_is_set', 'number', elev < 6);
 
   setInterval(function () {
     elev = getElev();
     node.setProperty('solar_elev', elev);
-    node.setProperty('sun_is_set', elev < -12);
+    node.setProperty('sun_is_set', elev < 6);
   }, 60 * 1000);
 });
