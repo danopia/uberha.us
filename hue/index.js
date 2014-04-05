@@ -31,7 +31,15 @@ node.start('home.lighting', 'hue', function () {
 
     case 'sleeping':
       console.log('==>', 'Setting night mode');
-      sleepTimer = setTimeout(setNightlight, 5*60*1000);
+      sleepTimer = setTimeout(function () {
+        api.setGroupLightState(0, lightState.create().alert());
+
+        sleepTimer = setTimeout(function () {
+          api.setGroupLightState(0, lightState.create().brightness(25));
+
+          sleepTimer = setTimeout(setNightlight, 2.5*60*1000);
+        }, 5*60*1000);
+      }, 10*1000);
 
       api.setGroupLightState(0, lightState.create().brightness(25));
       break;
@@ -39,7 +47,7 @@ node.start('home.lighting', 'hue', function () {
     case 'active_night':
       console.log('==>', 'Lights to full power');
       api.setGroupLightState(0, lightState.create().on().brightness(85));
-      
+
       if (new Date().getHours() > 12) {
         api.setLightState(4, lightState.create().brightness(40));
         api.setLightState(5, lightState.create().brightness(40));
