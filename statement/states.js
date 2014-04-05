@@ -2,7 +2,7 @@ exports.vacant = function (inputs) {
   if (inputs.people_awake)
     return inputs.sun_is_set ? 'active_night' : 'active_day';
   if (inputs.people_home)
-    return inputs.sun_is_set ? 'sleeping' : 'active_day';
+    return (inputs.sun_is_set && new Date().getHours() < 12) ? 'sleeping' : 'active_day';
 };
 
 exports.active_night = function (inputs) {
