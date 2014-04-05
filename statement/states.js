@@ -16,7 +16,7 @@ exports.active_day = function (inputs) {
   if (inputs.sun_is_set)
     return 'active_night';
   if (!inputs.people_home)
-    return 'sleeping';
+    return 'vacant';
 };
 
 exports.sleeping = function (inputs) {
