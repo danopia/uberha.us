@@ -23,7 +23,16 @@ exports.sleeping = function (inputs) {
   if (inputs.people_awake)
     return 'active_night';
   if (!inputs.sun_is_set)
-    return 'vacant';
+    return 'morning';
   if (!inputs.people_asleep)
     return 'vacant';
 };
+
+exports.morning = function (inputs) {
+  if (inputs.people_awake)
+    return 'active_day';
+  if (!inputs.people_home)
+    return 'vacant';
+  if (inputs.sun_is_set)
+    return 'sleeping';
+}
