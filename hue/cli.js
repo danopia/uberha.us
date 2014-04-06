@@ -74,7 +74,7 @@ rl.on('line', function (line) {
     }
   }
 
-  if (cmd == 'rgb') {
+  if (cmd == 'rgb16') {
     api.setGroupLightState(0, lightState.create().rgb(+parts[0] * 16, +parts[1] * 16, +parts[2] * 16).transition(0));
   }
 
