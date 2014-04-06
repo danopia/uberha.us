@@ -66,6 +66,14 @@ rl.on('line', function (line) {
     }
   }
 
+  if (cmd == 'h') {
+    if (parts.length > 1) {
+      api.setLightState(parts[1], lightState.create().hsl(+parts[0], 200, 95).transition(0));
+    } else {
+      api.setGroupLightState(0, lightState.create().hsl(+parts[0], 200, 95).transition(0));
+    }
+  }
+
   if (cmd == 'link') {
     console.log(api.pressLinkButton());
   }
