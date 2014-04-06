@@ -74,6 +74,10 @@ rl.on('line', function (line) {
     }
   }
 
+  if (cmd == 'rgb') {
+    api.setGroupLightState(0, lightState.create().rgb(+parts[0] * 16, +parts[1] * 16, +parts[2] * 16).transition(0));
+  }
+
   if (cmd == 'link') {
     console.log(api.pressLinkButton());
   }

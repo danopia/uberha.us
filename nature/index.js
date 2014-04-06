@@ -16,5 +16,6 @@ node.start('outside', 'nature', function () {
     elev = getElev();
     node.setProperty('solar_elev', elev);
     node.setProperty('sun_is_set', elev < 6);
+    console.log(elev);
   }, 60 * 1000);
 });
