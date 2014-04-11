@@ -3,7 +3,7 @@ var hue = require('node-hue-api'),
     lightState = hue.lightState;
 var Generator = require('./generator').Generator;
 
-var node = new (require('./../node'))();
+var node = new (require('./../lib/node'))();
 node.start('home.lighting', 'hue', function () {
   var api = new HueApi(node.config.ip, node.config.user);
 

@@ -2,7 +2,7 @@ var spawn = require('child_process').spawn;
 var http = require('http');
 var util = require('util');
 
-var config = require('./../config');
+var config = require('./../lib/config');
 var ddwrt = config.node.occupancy.ddwrt;
 var routerUrl = util.format('http://%s:%s@%s/Info.live.htm', ddwrt.user, ddwrt.pass, ddwrt.ip);
 

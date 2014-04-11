@@ -1,11 +1,11 @@
 var input = require('./input');
 
-var node = new (require('./../node'))();
+var node = new (require('./../lib/node'))();
 node.start('home.sensors', 'occupancy', function () {
   node.addProperty('people_home',  'number', 0);
   node.addProperty('people_awake', 'number', 0);
 
-  var people = require('./../config').users;
+  var people = require('./../lib/config').users;
   var lHome = 0, lAwake = 0;
 
   var refresh = function () {
@@ -20,7 +20,7 @@ node.start('home.sensors', 'occupancy', function () {
         var state = 0;
 
         if (macs.indexOf(person.phone) != -1) state = 1;
-        
+
         person.laptops.forEach(function (mac) {
           if (macs.indexOf(mac) != -1) state = 2;
         });

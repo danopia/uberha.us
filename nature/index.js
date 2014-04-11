@@ -5,7 +5,7 @@ function getElev() {
   return solar.solar_elevation(ms, node.config.lat, node.config.long);
 }
 
-var node = new (require('./../node'))();
+var node = new (require('./../lib/node'))();
 node.start('outside', 'nature', function () {
 
   var elev = getElev();

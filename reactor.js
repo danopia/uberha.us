@@ -2,7 +2,7 @@ var http = require('http');
 var crypto = require('crypto');
 var fork = require('child_process').fork;
 
-var config = require('./../config');
+var config = require('./lib/config');
 
 console.log('\n' + new Array(81).join('-'));
 

@@ -31,7 +31,7 @@ function change_input(input, newVal) {
   }
 }
 
-var node = new (require('./../node'))();
+var node = new (require('./../lib/node'))();
 node.start('home', 'statement', function () {
   node.addProperty('state', 'string', state);
 
