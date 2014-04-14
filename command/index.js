@@ -198,10 +198,6 @@ sox.stdout.on('data', function (chunk) {
   }
 });
 
-sox.stderr.on('data', function (d) {
-  console.log(d);
-}).setEncoding('utf8');
-
 var lastSnap = new Date(0);
 function utterance(peaks, highest) {
   var now = new Date();
