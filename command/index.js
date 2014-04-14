@@ -219,7 +219,6 @@ function trigger(peaks, highest) {
       console.log('RECORDING TIMED OUT');
       sox.kill();
       upload('cmd.wav');
-      hot = true;
     }, 2500);
   });
 };
@@ -248,7 +247,20 @@ function upload(filename) {
     });
 
     res.on('end', function () {
-      handleObj(JSON.parse(response));
+      if (response[0] == 'S' && response.indexOf('failed')) {
+        var chirp = require('child_process').spawn('sox', ['command/cmd_fail.wav', '-d']);
+        chirp.on('close', function () {
+          hot = true;
+        });
+        
+      } else {
+        var chirp = require('child_process').spawn('sox', ['command/cmd_ok.wav', '-d']);
+        chirp.on('close', function () {
+          hot = true;
+        });
+
+        handleObj(JSON.parse(response));
+      }
     });
   });
 
