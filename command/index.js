@@ -139,7 +139,7 @@ hue.locateBridges().then(displayBridges).done();
 
 var spawn = require('child_process').spawn;
 
-var sox = spawn('rec', ['-c', '1', '-b', '16', '-r', '16k', '-t', 'raw', '-']);
+var sox = spawn('sox', ['-d', '-c', '1', '-b', '16', '-r', '16k', '-t', 'raw', '-']);
 var lastpeak;
 var peak;
 var highest;
@@ -209,9 +209,9 @@ function trigger(peaks, highest) {
   if (peaks[2] && (peaks[2] == 0 || peaks[2] > 2)) return;
 
   hot = false;
-  var chirp = require('child_process').spawn('play', ['command/trigger.wav']);
+  var chirp = require('child_process').spawn('sox', ['command/trigger.wav', '-d']);
   chirp.on('close', function () {
-    var sox = require('child_process').spawn('rec', ['-b', '16', 'cmd.wav']);
+    var sox = require('child_process').spawn('sox', ['-d', '-b', '16', 'cmd.wav']);
     recording = true;
 
     setTimeout(function () {
