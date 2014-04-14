@@ -187,11 +187,11 @@ sox.stdout.on('data', function (chunk) {
     } else if (lastpeak > 5) {
       console.log('timed out');
       console.log(lastpeak, peak, highest, peaks);
-      trigger(peaks, highest);
+      utterance(peaks, highest);
       lastpeak = false;
       peaks = [];
 
-      cooloff = 5000;
+      cooloff = 1000;
     } else if (lastpeak) {
       lastpeak++;
     }
@@ -202,12 +202,25 @@ sox.stderr.on('data', function (d) {
   console.log(d);
 }).setEncoding('utf8');
 
-function trigger(peaks, highest) {
+lastSnap = new Date(0);
+function utterance(peaks, highest) {
   if (peaks.length < 2) return;
   if (peaks[0] == 0 || peaks[0] > 2) return;
   if (peaks[1] == 0 || peaks[1] > 2) return;
   if (peaks[2] && (peaks[2] == 0 || peaks[2] > 2)) return;
 
+  var now = new Date();
+  var diff = now - lastSnap;
+  console.log(diff, 'since previous snap');
+
+  if (diff < 1000) {
+    trigger();
+  }
+
+  lastSnap = now;
+}
+
+function trigger() {
   hot = false;
   var chirp = require('child_process').spawn('sox', ['command/trigger.wav', '-d']);
   chirp.on('close', function () {
@@ -252,7 +265,7 @@ function upload(filename) {
         chirp.on('close', function () {
           hot = true;
         });
-        
+
       } else {
         var chirp = require('child_process').spawn('sox', ['command/cmd_ok.wav', '-d']);
         chirp.on('close', function () {
