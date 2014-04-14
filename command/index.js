@@ -162,7 +162,7 @@ sox.stdout.on('data', function (chunk) {
         console.log('cooled off');
       }
     } else if (samp > 2000) {
-      console.log(samp, lastpeak, peak, highest);
+      //console.log(samp, lastpeak, peak, highest);
       if (!lastpeak) {
         lastpeak = 1;
         peak = 0;
@@ -171,7 +171,7 @@ sox.stdout.on('data', function (chunk) {
         peaks.push(lastpeak);
         peak++;
         lastpeak = 1;
-        console.log('lastpeaka', lastpeak);
+        //console.log('lastpeaka', lastpeak);
       } else {
         highest = Math.max(highest, samp);
       }
@@ -180,7 +180,7 @@ sox.stdout.on('data', function (chunk) {
         peaks.push(lastpeak);
         peak++;
         lastpeak = 1;
-        console.log('lastpeakb', lastpeak);
+        //console.log('lastpeakb', lastpeak);
       } else {
         highest = Math.max(highest, -samp);
       }
