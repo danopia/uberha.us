@@ -62,7 +62,7 @@ node.start('home.lighting', 'hue', function () {
   }
 
   node.listNodes(function (data) {
-    var statement = data['home.statement'];
+    var statement = data['home.stateful'];
 
     node.subscribe(statement, 'state', function (newState) {
       console.log('[hue] State changed to', newState);
