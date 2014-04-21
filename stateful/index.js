@@ -34,7 +34,7 @@ sLights.when('off', function (inputs) {
     return 'on';
 });
 sLights.when('on', function (inputs) {
-  if (inputs.occupancy == 'vacant')
+  if (inputs.occupancy == 'vacant' || inputs.time == 'day')
     return 'off';
 });
 
