@@ -1,20 +1,16 @@
 var uber = require('.');
-var sOcc = new uber.Statement('occupancy', 'vacant');
-var sTime = new uber.Statement('time', 'day');
-var sLights = new uber.Statement('lights', 'off');
 
+var sOcc = new uber.Statement('occupancy', 'vacant');
 sOcc.when('vacant', function (inputs) {
   if (inputs.people_awake || inputs.people_home)
     return 'active';
 });
-
 sOcc.when('active', function (inputs) {
   if (!inputs.people_home)
     return 'vacant';
   if (!inputs.people_awake)
     return 'inactive';
 });
-
 sOcc.when('inactive', function (inputs) {
   if (inputs.people_awake)
     return 'active';
@@ -22,28 +18,25 @@ sOcc.when('inactive', function (inputs) {
     return 'vacant';
 });
 
-
+var sTime = new uber.Statement('time', 'day');
 sTime.when('day', function (inputs) {
   if (inputs.sun_is_set)
     return 'night';
 });
-
 sTime.when('night', function (inputs) {
   if (!inputs.sun_is_set)
     return 'day';
 });
 
-
+var sLights = new uber.Statement('lights', 'off');
 sLights.when('off', function (inputs) {
   if (inputs.occupancy == 'active' && inputs.time == 'night')
     return 'on';
 });
-
 sLights.when('on', function (inputs) {
   if (inputs.occupancy == 'vacant')
     return 'off';
 });
-
 
 var node = new uber.Node();
 node.start('home', 'stateful', function () {
