@@ -19,3 +19,5 @@ config.json
 command/trigger.wav
 
 config.toml
+
+*.wav
