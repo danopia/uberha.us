@@ -1,65 +1,60 @@
 var uber = require('.');
+var sOcc = new uber.Statement('occupancy', 'vacant');
+var sTime = new uber.Statement('time', 'day');
+var sLights = new uber.Statement('lights', 'off');
 
-var occMech = new uber.Statement('occupancy', 'vacant');
-
-occMech.when('vacant', function (inputs) {
-  if (inputs.people_awake)
-    return inputs.sun_is_set ? 'active_night' : 'active_day';
-  if (inputs.people_home)
-    return (inputs.sun_is_set && new Date().getHours() < 12) ? 'sleeping' : 'active_day';
+sOcc.when('vacant', function (inputs) {
+  if (inputs.people_awake || inputs.people_home)
+    return 'active';
 });
 
-occMech.when('active_night', function (inputs) {
+sOcc.when('active', function (inputs) {
   if (!inputs.people_home)
     return 'vacant';
   if (!inputs.people_awake)
-    return 'sleeping';
+    return 'inactive';
 });
 
-occMech.when('active_day', function (inputs) {
-  if (inputs.sun_is_set)
-    return 'active_night';
-  if (!inputs.people_home)
-    return 'vacant';
-});
-
-occMech.when('sleeping', function (inputs) {
+sOcc.when('inactive', function (inputs) {
   if (inputs.people_awake)
-    return 'active_night';
-  if (!inputs.sun_is_set)
-    return 'morning';
+    return 'active';
   if (!inputs.people_asleep)
     return 'vacant';
 });
 
-occMech.when('morning', function (inputs) {
-  if (inputs.people_awake)
-    return 'active_day';
-  if (!inputs.people_home)
-    return 'vacant';
+
+sTime.when('day', function (inputs) {
   if (inputs.sun_is_set)
-    return 'sleeping';
+    return 'night';
 });
+
+sTime.when('night', function (inputs) {
+  if (!inputs.sun_is_set)
+    return 'day';
+});
+
+
+sLights.when('off', function (inputs) {
+  if (inputs.occupancy == 'active' && inputs.time == 'night')
+    return 'on';
+});
+
+sLights.when('on', function (inputs) {
+  if (inputs.occupancy == 'vacant')
+    return 'off';
+});
+
 
 var node = new uber.Node();
 node.start('home', 'stateful', function () {
-  occMech.mapInput(node, 'home.sensors.occupancy', 'people_home');
-  occMech.mapInput(node, 'home.sensors.occupancy', 'people_awake');
-  occMech.mapInput(node, 'outside.nature', 'sun_is_set');
-  occMech.mapOutput(node, 'state');
+  sOcc.mapInput(node, 'home.sensors.occupancy', 'people_home');
+  sOcc.mapInput(node, 'home.sensors.occupancy', 'people_awake');
+  sOcc.mapOutput(node, 'occupancy');
 
-/*  node.listNodes(function (data) {
-    var occupancy = data['home.sensors.occupancy'];
-    node.subscribe(occupancy, 'people_home', function (peopleHome) {
-      change_input('people_home', peopleHome);
-    });
-    node.subscribe(occupancy, 'people_awake', function (peopleAwake) {
-      change_input('people_awake', peopleAwake);
-    });
+  sTime.mapInput(node, 'outside.nature', 'sun_is_set');
+  sTime.mapOutput(node, 'time');
 
-    var nature = data['outside.nature'];
-    node.subscribe(nature, 'sun_is_set', function (sunIsSet) {
-      change_input('sun_is_set', sunIsSet);
-    });
-  });*/
+  sLights.mapInput(node, 'home.stateful', 'occupancy');
+  sLights.mapInput(node, 'home.stateful', 'time');
+  sLights.mapOutput(node, 'state');
 });

@@ -29,7 +29,7 @@ node.start('home.lighting', 'hue', function () {
 
     switch (state) {
 
-    case 'sleeping':
+    case 'night':
       console.log('==>', 'Setting night mode');
       sleepTimer = setTimeout(function () {
         api.setGroupLightState(0, lightState.create().alert());
@@ -44,7 +44,7 @@ node.start('home.lighting', 'hue', function () {
       api.setGroupLightState(0, lightState.create().brightness(25));
       break;
 
-    case 'active_night':
+    case 'on':
       console.log('==>', 'Lights to full power');
       api.setGroupLightState(0, lightState.create().on().brightness(85));
 
