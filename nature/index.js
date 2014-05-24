@@ -10,12 +10,12 @@ var node = new (require('./../lib/node'))();
 node.start('outside', 'nature', function () {
 
   // solar
-  var elev = getElev();
+  var elev = Math.round(getElev() * 10) / 10;
   node.addProperty('solar_elev', 'number', elev);
   node.addProperty('sun_is_set', 'number', elev < 6);
 
   setInterval(function () {
-    elev = getElev();
+    elev = Math.round(getElev() * 10) / 10;
     node.setProperty('solar_elev', elev);
     node.setProperty('sun_is_set', elev < 6);
 
