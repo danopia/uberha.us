@@ -21,3 +21,5 @@ command/trigger.wav
 config.toml
 
 *.wav
+
+*~
