@@ -52,7 +52,7 @@ node.start('home.media', 'chromecast', function () {
 
       if (seen.indexOf(appId) === -1) {
         seen.push(appId);
-        console.log(this.tag, 'Unknown app', appId, 'active, assuming video');
+        console.log(node.tag, 'Unknown app', appId, 'active, assuming video');
       }
 
       node.setProperty('app_id',   appId);
