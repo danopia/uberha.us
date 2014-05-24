@@ -1,0 +1,23 @@
+{
+  "name": "uberha.us",
+  "version": "0.0.0",
+  "description": "Movie-grade modular smarthouse system in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/danopia/uberha.us.git"
+  },
+  "author": "Daniel Lamando",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danopia/uberha.us/issues"
+  },
+  "homepage": "https://github.com/danopia/uberha.us",
+  "dependencies": {
+    "node-hue-api": "^0.2.2",
+    "toml": "^2.0.5"
+  }
+}
