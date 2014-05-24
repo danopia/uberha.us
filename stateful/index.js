@@ -1,4 +1,4 @@
-var uber = require('.');
+var uber = require('..');
 
 var sOcc = new uber.Statement('occupancy', 'vacant');
 sOcc.when('vacant', function (inputs) {
