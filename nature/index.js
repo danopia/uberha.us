@@ -20,7 +20,7 @@ node.start('outside', 'nature', function () {
     node.setProperty('sun_is_set', elev < 6);
 
     console.log(node.tag, 'Setting solar elevation to', elev);
-  }, 60 * 1000);
+  }, 2.5 * 60 * 1000);
 
   // weather
   node.addProperty('weather',  'string');
