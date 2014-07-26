@@ -111,10 +111,10 @@ rl.on('line', function (line) {
   }
   if (cmd == 'dance') {
     dance = setInterval(function () {
-      for (var l = 1; l <= 6; l++) {
-        api.setLightState(l, lightState.create().on().transition(0).hsl(Math.round(Math.random() * 360), 100, 95).effect('none'));
+      for (var l = 1; l <= 3; l++) {
+        api.setLightState(l, lightState.create().on().transition(0).hsl(Math.floor(Math.random() * 360), 100, 10).effect('none'));
       }
-    }, 800);
+    }, 500);
   }
 
   if (rgb) {
@@ -139,17 +139,6 @@ rl.on('line', function (line) {
     for (var l = 1; l <= 3; l++) {
       api.setLightState(l, lightState.create().hsl(Math.round(Math.random() * 360), 100, 95).transition(0));
     }
-  }
-
-  if (dance) {
-    dance = null;
-  }
-  if (cmd == 'dance') {
-    dance = setInterval(function () {
-      for (var l = 1; l <= 3; l++) {
-        api.setLightState(l, lightState.create().on().transition(0).hsl(Math.round(Math.random() * 360), 100, 95).effect('none'));
-      }
-    }, 500);
   }
 
   rl.prompt();
